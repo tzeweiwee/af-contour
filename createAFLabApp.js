@@ -40,12 +40,12 @@ const GITHUB_REPO =
 const APP_COMMAND = 'create-af-app';
 const START_UP_TEXT = 'Create Airfoil Lab App';
 
-// TODO: add post install script?
 const packageDependencies = {
   chakraui:
     '@chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^6',
   tailwindcss: 'tailwindcss postcss autoprefixer',
-  prisma: 'prisma',
+  prisma:
+    'prisma superjson zod @trpc/next @trpc/client @prisma/client @next-auth/prisma-adapter @trpc/react-query @trpc/server next-auth',
   supabase: '', // NO NEED FOR SUPABASE CLIENT
 };
 
@@ -54,6 +54,7 @@ const dependenciesPrompts = [
     type: 'select',
     name: 'packageManager',
     message: 'Choose a package manager',
+    hint: ' - Ensure that the package manager you choose are installed globally in your machine',
     choices: [
       { title: 'PNPM', value: 'pnpm' },
       { title: 'NPM', value: 'npm' },
