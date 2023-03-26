@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const figlet = require('figlet');
@@ -232,8 +232,6 @@ async function installDependencies() {
     backendServices,
   };
 
-  console.log({ selectedDependencies });
-
   const cssStyleDependencies = getCssDependencies(cssStyling);
   const backendDependencies = getBackendServicesDependencies(backendServices);
 
@@ -251,8 +249,6 @@ async function installDependencies() {
 async function postInstall() {
   const { isCreateSupabaseProject } = await prompts(postInstallPrompts);
   const { backendServices, packageManager } = selectedDependencies;
-
-  console.log({ backendServices });
 
   if (backendServices.includes('prisma')) {
     execSync(`${packageManager} run init:prisma`, { stdio: 'inherit' });
