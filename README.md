@@ -20,7 +20,7 @@ The script allows you to:
 
 ## Quick Overview
 
-First, you will need npx to get started
+First, you will need `npx` to get started
 
 ```sh
 npx create-af-app my-app-name
