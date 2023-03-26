@@ -1,5 +1,5 @@
 {
-  "name": "af-contour",
+  "name": "create-af-lab-app",
   "version": "1.0.4",
   "description": "Scaffolding app for Airfoil Labs apps",
   "bin": {

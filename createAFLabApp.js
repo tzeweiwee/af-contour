@@ -38,7 +38,7 @@ let isCurrentDir = false; // if user is installing in the current directory
 const GITHUB_REPO =
   'https://github.com/tzeweiwee/airfoil-labs-nextjs-template.git';
 const APP_COMMAND = 'create-af-app';
-const START_UP_TEXT = 'Airfoil Labs App Contour';
+const START_UP_TEXT = 'Create Airfoil Lab App';
 
 // TODO: add post install script?
 const packageDependencies = {
@@ -174,7 +174,7 @@ function validateProjectPath() {
 }
 
 function cloneRepo() {
-  console.log(chalk.white.bgBlue.bold('Cloning files...'));
+  console.log(chalk.white.bgBlue.bold('Creating template...'));
   execSync(`git clone --depth 1 ${GITHUB_REPO} ${projectPath}`);
 }
 
