@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/tzeweiwee/create-af-lab-app.git"
   },
-  "author": "Eric Wee",
+  "author": "Eric Wee <ericw@airfoil.studio>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tzeweiwee/create-af-lab-app/issues"
