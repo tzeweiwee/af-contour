@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
+const { execSync, exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const figlet = require('figlet');
@@ -33,7 +33,7 @@ const chalk = require('chalk');
  */
 
 let projectName, projectPath;
-let cssStyleFramework;
+let selectedDependencies = {}; // objects of prompts answers
 let isCurrentDir = false; // if user is installing in the current directory
 const GITHUB_REPO =
   'https://github.com/tzeweiwee/airfoil-labs-nextjs-template.git';
@@ -46,10 +46,10 @@ const packageDependencies = {
     '@chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^6',
   tailwindcss: 'tailwindcss postcss autoprefixer',
   prisma: 'prisma',
-  supabase: '@supabase/supabase-js',
+  supabase: '', // NO NEED FOR SUPABASE CLIENT
 };
 
-const questions = [
+const dependenciesPrompts = [
   {
     type: 'select',
     name: 'packageManager',
@@ -64,22 +64,50 @@ const questions = [
   {
     type: 'select',
     name: 'cssStyling',
-    message: 'Choose CSS styling - App comes with Tailwind by default',
+    message: 'Choose CSS styling',
+    hint: ' - App comes with Tailwind by default',
     choices: [
       { title: 'Skip', value: 'none' },
       { title: 'Chakra UI', value: 'chakraui' },
+      { title: 'Airfoil UI (Coming soon)', value: 'afui', disabled: true },
     ],
     initial: 0,
   },
   {
     type: 'multiselect',
     name: 'backendServices',
-    message: 'Choose backend services',
+    message: 'Add backend services',
+    hint: ' - Adds boilerplate code to your project',
     choices: [
-      { title: 'Prisma', value: 'prisma', selected: false },
-      { title: 'Supabase', value: 'supabase', selected: false },
+      { title: 'Prisma, tRPC, NextAuth', value: 'prisma', selected: true },
+      {
+        title: 'Supabase with Next.js API',
+        value: 'supabase',
+        selected: false,
+      },
     ],
     hint: '- Space to select. Return to submit',
+  },
+];
+
+const postInstallPrompts = [
+  {
+    type: 'confirm',
+    name: 'isCreateSupabaseProject',
+    hint: ' - Deploys DB, Auth on Supabase via CLI',
+    message: 'Would you like to create a Supabase project?',
+    initial: false,
+  },
+];
+
+const supabaseProjectPrompts = [
+  {
+    type: 'text',
+    name: 'projectName',
+    message: 'What is the name of the project?',
+    validate: (name) =>
+      (name !== '' && name.length > 0) ||
+      'Please enter the name of the project',
   },
 ];
 
@@ -182,7 +210,6 @@ function getInstallCommand(packageManager, dependencies) {
   switch (packageManager) {
     case 'yarn':
     case 'pnpm':
-      console.log({ dependencies });
       if (!dependencies && dependencies !== ' ') {
         return `${packageManager} add ${dependencies}`;
       }
@@ -193,13 +220,20 @@ function getInstallCommand(packageManager, dependencies) {
 }
 
 async function installDependencies() {
-  // change working directory
-  process.chdir(projectPath);
-
   const { packageManager, cssStyling, backendServices } = await prompts(
-    questions
+    dependenciesPrompts
   );
-  cssStyleFramework = cssStyling;
+
+  // storing the dep answers for post install script
+  selectedDependencies = {
+    ...selectedDependencies,
+    packageManager,
+    cssStyling,
+    backendServices,
+  };
+
+  console.log({ selectedDependencies });
+
   const cssStyleDependencies = getCssDependencies(cssStyling);
   const backendDependencies = getBackendServicesDependencies(backendServices);
 
@@ -211,17 +245,33 @@ async function installDependencies() {
   });
 }
 
-/**
- *
- * @deprecated in favor of hygen
- */
-function copyBoilerplateFiles() {
-  if (!cssStyleFramework || cssStyleFramework === 'none') {
-    return;
+// TODO: abstract this out to another file for custom post-install script
+// runs hygen
+// create superbase project if selected
+async function postInstall() {
+  const { isCreateSupabaseProject } = await prompts(postInstallPrompts);
+  const { backendServices, packageManager } = selectedDependencies;
+
+  console.log({ backendServices });
+
+  if (backendServices.includes('prisma')) {
+    execSync(`${packageManager} run init:prisma`, { stdio: 'inherit' });
+    console.log(chalk.green.bold('Prisma boilerplate codes added!'));
   }
-  console.log(chalk.white.bgBlue.bold('Copying boilerplate files...'));
-  // copy boilerplate files to root project for chosen css framework
-  execSync(`rsync -avh boilerplate_files/${cssStyleFramework}/* ./`);
+
+  if (backendServices.includes('supabase')) {
+    execSync(`${packageManager} run init:supabase`, { stdio: 'inherit' });
+    console.log(chalk.green.bold('Supabase boilerplate code added!'));
+  }
+
+  if (isCreateSupabaseProject) {
+    execSync('npx supabase login', { stdio: 'inherit' });
+    execSync('npx supabase projects list', { stdio: 'inherit' });
+    const { projectName } = await prompts(supabaseProjectPrompts);
+    execSync(`npx supabase projects create ${projectName} -i`, {
+      stdio: 'inherit',
+    });
+  }
 }
 
 function cleanUp() {
@@ -243,7 +293,7 @@ function success() {
   console.log(figlet.textSync('SUCCESS!'));
   console.log(
     chalk.green.bold(
-      `Airfoil Lab project constructed! ${
+      `Airfoil Lab project created! ${
         isCurrentDir ? '' : `cd ${projectName} to start!`
       }`
     )
@@ -258,9 +308,12 @@ async function init() {
   validateProjectPath();
   try {
     cloneRepo();
+
+    // change working directory
+    process.chdir(projectPath);
+
     await installDependencies();
-    // copyBoilerplateFiles();
-    // Post install script
+    await postInstall();
     // Push the code directly to Github repo (Optional)
     cleanUp();
     success();
