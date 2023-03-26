@@ -1,9 +1,9 @@
 {
   "name": "create-af-lab-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scaffolding app for Airfoil Labs apps",
   "bin": {
-    "create-af-app": "./createAFLabApp.js"
+    "create-af-lab-app": "./createAFLabApp.js"
   },
   "scripts": {},
   "repository": {
