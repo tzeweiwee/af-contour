@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "description": "Scaffolding app for Airfoil Labs apps",
   "bin": {
-    "contour-construct": "./createNextApp.js"
+    "create-af-app": "./AFContourConstruct.js"
   },
   "scripts": {},
   "repository": {
@@ -19,6 +19,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "figlet": "^1.5.2",
+    "lodash": "^4.17.21",
     "prompts": "^2.4.2",
     "validate-npm-package-name": "^5.0.0"
   }

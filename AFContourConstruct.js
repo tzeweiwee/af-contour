@@ -35,7 +35,19 @@ const chalk = require('chalk');
 let projectName, projectPath;
 let cssStyleFramework;
 let isCurrentDir = false; // if user is installing in the current directory
-const GITHUB_REPO = 'https://github.com/tzeweiwee/nextjs-template.git';
+const GITHUB_REPO =
+  'https://github.com/tzeweiwee/airfoil-labs-nextjs-template.git';
+const APP_COMMAND = 'create-af-app';
+const START_UP_TEXT = 'Airfoil Labs App Contour';
+
+// TODO: add post install script?
+const packageDependencies = {
+  chakraui:
+    '@chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^6',
+  tailwindcss: 'tailwindcss postcss autoprefixer',
+  prisma: 'prisma',
+  supabase: '@supabase/supabase-js',
+};
 
 const questions = [
   {
@@ -47,18 +59,27 @@ const questions = [
       { title: 'NPM', value: 'npm' },
       { title: 'Yarn', value: 'yarn' },
     ],
-    initial: 1,
+    initial: 0,
   },
   {
     type: 'select',
     name: 'cssStyling',
-    message: 'Choose CSS styling',
+    message: 'Choose CSS styling - App comes with Tailwind by default',
     choices: [
-      { title: 'None', value: 'none' },
+      { title: 'Skip', value: 'none' },
       { title: 'Chakra UI', value: 'chakraui' },
-      { title: 'Tailwindcss', value: 'tailwindcss' },
     ],
-    initial: 1,
+    initial: 0,
+  },
+  {
+    type: 'multiselect',
+    name: 'backendServices',
+    message: 'Choose backend services',
+    choices: [
+      { title: 'Prisma', value: 'prisma', selected: false },
+      { title: 'Supabase', value: 'supabase', selected: false },
+    ],
+    hint: '- Space to select. Return to submit',
   },
 ];
 
@@ -68,14 +89,17 @@ function setProjectPath() {
 }
 
 function getCssDependencies(cssStyleFramework) {
-  switch (cssStyleFramework) {
-    case 'chakraui':
-      return '@chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^6';
-    case 'tailwindcss':
-      return 'tailwindcss postcss autoprefixer';
-    default:
-      return null;
+  return packageDependencies[cssStyleFramework] || '';
+}
+
+function getBackendServicesDependencies(backendServices) {
+  if (!backendServices || backendServices.length === 0) {
+    return '';
   }
+
+  return backendServices.reduce((deps, service) => {
+    return deps.concat(packageDependencies[service]);
+  }, '');
 }
 
 function validateNodeVersion() {
@@ -84,13 +108,15 @@ function validateNodeVersion() {
   const major = semver[0];
 
   if (major < 14) {
-    console.error(chalk.red(
-      'You are running Node ' +
-        currentNodeVersion +
-        '.\n' +
-        'Create Airfoil Next App requires Node 14 or higher. \n' +
-        'Please update your version of Node.'
-    ));
+    console.error(
+      chalk.red(
+        'You are running Node ' +
+          currentNodeVersion +
+          '.\n' +
+          'Create Airfoil Next App requires Node 14 or higher. \n' +
+          'Please update your version of Node.'
+      )
+    );
     process.exit(1);
   }
 }
@@ -99,7 +125,7 @@ function validateAppName() {
   if (process.argv.length < 3) {
     console.log(chalk.red('You have to provide a name to your app.'));
     console.log('For example :');
-    console.log(chalk.green(' npx create-airfoil-nextjs-app my-app'));
+    console.log(chalk.green(` npx ${APP_COMMAND} my-app`));
     process.exit(1);
   }
 
@@ -107,7 +133,7 @@ function validateAppName() {
 
   // local directory is allowed
   if (projectName === '.') {
-    isCurrentDir = true
+    isCurrentDir = true;
     return;
   }
 
@@ -123,10 +149,14 @@ function validateAppName() {
     );
     console.log(chalk.yellow(`Please fix the errors below: `));
     if (validationResult.errors) {
-      validationResult.errors.forEach((err) => console.error(` - ${chalk.red(err)}`));
+      validationResult.errors.forEach((err) =>
+        console.error(` - ${chalk.red(err)}`)
+      );
     }
     if (validationResult.warnings) {
-      validationResult.warnings.forEach((warning) => console.warn(` - ${chalk.yellow(warning)}`));
+      validationResult.warnings.forEach((warning) =>
+        console.warn(` - ${chalk.yellow(warning)}`)
+      );
     }
     process.exit(1);
   }
@@ -134,7 +164,11 @@ function validateAppName() {
 
 function validateProjectPath() {
   if (!isCurrentDir && fs.existsSync(projectPath)) {
-    console.error(chalk.red('Directory already exist, please choose another directory or project name'));
+    console.error(
+      chalk.red(
+        'Directory already exist, please choose another directory or project name'
+      )
+    );
     process.exit(1);
   }
 }
@@ -144,14 +178,17 @@ function cloneRepo() {
   execSync(`git clone --depth 1 ${GITHUB_REPO} ${projectPath}`);
 }
 
-function getInstallCommand(packageManager) {
-  switch(packageManager) {
+function getInstallCommand(packageManager, dependencies) {
+  switch (packageManager) {
     case 'yarn':
-      return 'add -D'
     case 'pnpm':
+      console.log({ dependencies });
+      if (!dependencies && dependencies !== ' ') {
+        return `${packageManager} add ${dependencies}`;
+      }
     case 'npm':
-    default: 
-      return 'install --save-dev'
+    default:
+      return `${packageManager} install ${dependencies}`;
   }
 }
 
@@ -159,19 +196,25 @@ async function installDependencies() {
   // change working directory
   process.chdir(projectPath);
 
-  const { packageManager, cssStyling } = await prompts(questions);
+  const { packageManager, cssStyling, backendServices } = await prompts(
+    questions
+  );
   cssStyleFramework = cssStyling;
   const cssStyleDependencies = getCssDependencies(cssStyling);
+  const backendDependencies = getBackendServicesDependencies(backendServices);
+
+  const allDependencies = [cssStyleDependencies, backendDependencies].join(' ');
 
   console.log(chalk.white.bgBlue.bold('Installing dependencies...'));
-  // option to use PNPM, Yarn and NPM
-  execSync(`${packageManager} install`);
-  // option to install css frameworks or none, for Yarn, have to use 'yarn add'
-  if (cssStyleDependencies) {
-    execSync(`${packageManager} ${getInstallCommand(packageManager)} ${cssStyleDependencies}`);
-  }
+  execSync(getInstallCommand(packageManager, allDependencies), {
+    stdio: 'inherit',
+  });
 }
 
+/**
+ *
+ * @deprecated in favor of hygen
+ */
 function copyBoilerplateFiles() {
   if (!cssStyleFramework || cssStyleFramework === 'none') {
     return;
@@ -193,12 +236,18 @@ function deleteDirectory() {
 }
 
 function startUp() {
-  console.log(figlet.textSync('Airfoil Labs App Contour'));
+  console.log(figlet.textSync(START_UP_TEXT));
 }
 
 function success() {
   console.log(figlet.textSync('SUCCESS!'));
-  console.log(chalk.green.bold(`Airfoil Lab project constructed! ${isCurrentDir ? '' : `cd ${projectName} to start!` }`));
+  console.log(
+    chalk.green.bold(
+      `Airfoil Lab project constructed! ${
+        isCurrentDir ? '' : `cd ${projectName} to start!`
+      }`
+    )
+  );
 }
 
 async function init() {
@@ -211,7 +260,7 @@ async function init() {
     cloneRepo();
     await installDependencies();
     // copyBoilerplateFiles();
-    // Install Supabase
+    // Post install script
     // Push the code directly to Github repo (Optional)
     cleanUp();
     success();
