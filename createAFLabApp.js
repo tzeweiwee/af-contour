@@ -27,9 +27,9 @@ const chalk = require('chalk');
  * Prompts
  *
  * 1. yarn, pnpm, npm
- * 2. Chakra UI, Tailwindcss, None
- * 3. TODO: Supabase
- * 4. TODO: Push to github automatically
+ * 2. Chakra UI, None
+ * 3. Prisma, Supabase
+ * 4. Deploy Supabase project
  */
 
 let projectName, projectPath;
@@ -314,7 +314,6 @@ async function init() {
 
     await installDependencies();
     await postInstall();
-    // Push the code directly to Github repo (Optional)
     cleanUp();
     success();
   } catch (err) {

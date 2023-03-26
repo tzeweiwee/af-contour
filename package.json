@@ -1,6 +1,6 @@
 {
   "name": "create-af-lab-app",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "description": "Scaffolding app for Airfoil Labs apps",
   "bin": {
     "create-af-app": "./createAFLabApp.js"
@@ -8,14 +8,14 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tzeweiwee/af-contour.git"
+    "url": "git+https://github.com/tzeweiwee/create-af-lab-app.git"
   },
-  "author": "Eric",
-  "license": "ISC",
+  "author": "Eric Wee",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tzeweiwee/af-contour/issues"
+    "url": "https://github.com/tzeweiwee/create-af-lab-app/issues"
   },
-  "homepage": "https://github.com/tzeweiwee/af-contour#readme",
+  "homepage": "https://github.com/tzeweiwee/create-af-lab-app#readme",
   "dependencies": {
     "chalk": "4.1.2",
     "figlet": "^1.5.2",

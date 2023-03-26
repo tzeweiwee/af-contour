@@ -1,22 +1,64 @@
-# Create Airfoil NextJS App
+# Create Airfoil Next.js App
 
-Create NextJS apps from a Airfoiled template with no build configuration.
+Create full-stack templated Next.js, Prisma, Supabase apps from scratch in 5 minutes.
 
+This script will help you to create a new full-stack NextJS app with backend services. The Next.js templated is cloned from this [repo](https://github.com/tzeweiwee/airfoil-labs-nextjs-template) forked and updated from of Zachery's [repo](https://github.com/Aztriltus/nextjs-ts-tailwind-template).
+
+The template includes:
+
+- [hygen](https://hygen.io) code generator
+
+The script allows you to:
+
+- Create a repository locally with the [template](https://github.com/tzeweiwee/airfoil-labs-nextjs-template)
+- Adds boilerplate codes for Prisma + tRPC + NextAuth and Supabase
+- Choose css styling (Comes with Tailwindcss by default)
+- Optionally deploys Supabase project via CLI
 
 ## Quick Overview
+
 First, you will need npx to get started
+
 ```sh
-npx create-airfoil-nextjs-app-experimental client-app
-cd client-app
-npm dev
+npx create-af-app my-app-name
+...
+cd my-app-name
+pnpm dev
 ```
 
 ## Guide
 
-This experimental package will help developers to create a new NextJS app: clone from this [repo](https://github.com/tzeweiwee/nextjs-template) built on top of Zachery's [repo](https://github.com/Aztriltus/nextjs-ts-tailwind-template).
+#### Package Manager
 
-Developers can choose the package manager and css frameworks from the command prompts.
+Choose between `pnpm`, `npm` or `yarn` for your project.
+
+#### Css Styling
+
+The template is preconfigured with Tailwindcss by default. But you can still choose to install Chakra UI or Airfoil UI (Coming soon) in future.
+
+#### Backend Services
+
+Lab projects often comes with backend services that requires authentication and communicates with DB or blockchain. This is why the upgraded template comes with `Prisma + NextAuth` and `Supabase` boilerplate codes to get the developers up and running!
+You can choose to add one or both or none, it's completely up to you! This prompt only adds boilerplate codes to the project.
+
+#### Supabase Deployment
+
+This allows you to choose to deploy a Supabase project (optional of course). All you need to do is to enter your Supabase access token and a project name to deploy to a project hosted by Supabase.
+
+#### Any errors that occur in the CLI
+
 The script will validate Node version, project path, project name and will rollback if any error occurs.
 
-![create-airfoil-app-demo](https://user-images.githubusercontent.com/19740800/206370275-d0361a0b-e447-42cb-bbef-3843bb7beb72.gif)
+## FAQ
 
+##### I would like to make changes to the boilerplate codes, how do I do that?
+
+Yes, you can make changes to the template. Simply open a pull request and we'll review the changes together!
+
+## Contribution
+
+Any contributions are welcomed here. Please open a pull request with your intent and motivation!
+
+## Issues
+
+Open a Github issue if you have any proposals or bugs found for the script.
