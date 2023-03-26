@@ -1,4 +1,7 @@
 # Create Airfoil Next.js App
+![image](https://user-images.githubusercontent.com/19740800/227796978-be82736d-22bd-416c-992e-c334002fe5bf.png)
+
+
 
 Create full-stack templated Next.js, Prisma, Supabase apps from scratch in 5 minutes.
 
@@ -28,6 +31,10 @@ pnpm dev
 
 ## Guide
 
+#### Project Name
+
+Enter a project name within npm naming conventions.
+
 #### Package Manager
 
 Choose between `pnpm`, `npm` or `yarn` for your project.
@@ -36,10 +43,16 @@ Choose between `pnpm`, `npm` or `yarn` for your project.
 
 The template is preconfigured with Tailwindcss by default. But you can still choose to install Chakra UI or Airfoil UI (Coming soon) in future.
 
+
 #### Backend Services
 
 Lab projects often comes with backend services that requires authentication and communicates with DB or blockchain. This is why the upgraded template comes with `Prisma + NextAuth` and `Supabase` boilerplate codes to get the developers up and running!
 You can choose to add one or both or none, it's completely up to you! This prompt only adds boilerplate codes to the project.
+
+![image](https://user-images.githubusercontent.com/19740800/227796723-e585e9d4-793d-4fb5-9da4-c9b6da7ba1d7.png)
+
+![image](https://user-images.githubusercontent.com/19740800/227796789-fa16c3ed-43b9-4b72-a5db-1f249849ab4c.png)
+
 
 #### Supabase Deployment
 
