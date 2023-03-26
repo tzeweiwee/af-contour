@@ -1,0 +1,25 @@
+{
+  "name": "af-contour",
+  "version": "1.0.4",
+  "description": "Scaffolding app for Airfoil Labs apps",
+  "bin": {
+    "contour-construct": "./createNextApp.js"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tzeweiwee/af-contour.git"
+  },
+  "author": "Eric",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tzeweiwee/af-contour/issues"
+  },
+  "homepage": "https://github.com/tzeweiwee/af-contour#readme",
+  "dependencies": {
+    "chalk": "4.1.2",
+    "figlet": "^1.5.2",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^5.0.0"
+  }
+}
